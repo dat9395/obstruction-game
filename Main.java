@@ -1,11 +1,185 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import javax.management.openmbean.KeyAlreadyExistsException;
 
 class Main {
-    public static void main(String[] args) {
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Welcome to Obstruction! ");
-        Board board = new Board(20, 20);
-        Display.printBoard(board);
-    }
+	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	String input = "";
+	
+	public static void main(String[] args) {
+		Main main = new Main();
+
+		// Get board size from input
+		System.out.print("Welcome to Obstruction! Please enter a number N\n" +
+							"between 6 to 20 to generate a N x N board: ");
+		int size = main.getBoardSize();
+		Board board = new Board(size, size);
+		System.out.printf("A %d X %d board is created.\n", size, size);
+		
+		// Get player order and generate players
+		System.out.print("Do you want to go first? (y/n) ");
+		Board.Player[] players = new Board.Player[2];
+		if (main.userGoFirst()) {
+			players[0] = board.new Player(1, 'h');
+			players[1] = board.new Player(2, 'c');
+		}
+		else {
+			players[0] = board.new Player(1, 'c');
+			players[1] = board.new Player(2, 'h');
+		}
+
+		System.out.println("Game start!");
+		Display.printBoard(board);
+		
+		char winner;
+		
+		playRounds: // Loop label
+		while (true) {
+			for (Board.Player player : players) {
+				if (player.getType() == 'h') {
+					System.out.print("Your turn. Please enter a position to move (row-column): ");
+				}
+				
+				main.getMove(player);
+				// GetMove() will only return true as we check isFinished() after every move 
+				Display.printBoard(board);
+
+				if (player.getType() == 'c') {
+					System.out.printf("Last move: %d-%d\n", 
+										board.getLastRandMove()[0], 
+										board.getLastRandMove()[1]);
+				}
+
+				if (board.isFinished()) {
+					winner = player.getType();
+					break playRounds;
+				}
+			}
+		}
+
+		if (winner == 'h') {
+			System.out.println("You win!");
+		}
+		else {
+			System.out.println("Computer win, you lose!");
+		}
+	}
+
+	public int getBoardSize() {
+		int size = 0;
+		while (true) {
+			try {
+				input = reader.readLine();
+				checkUserExit();
+				
+				size = Integer.parseInt(input);
+				if (size < 6 || size > 20) {
+					throw new NumberFormatException();
+				}
+			}
+			catch (IOException e) {
+				System.out.print("Something wrong happened! Exiting program...");
+				System.exit(1);
+			}
+			catch (NumberFormatException e) {
+				System.out.print("Invalid input! Please try again: ");
+				continue;
+			}
+					
+			return size;
+		}
+	}
+
+	public boolean userGoFirst() {
+		while (true) {
+			try {
+				input = reader.readLine();
+				checkUserExit();
+				
+				if (!input.toLowerCase().equals("y") && 
+					!input.toLowerCase().equals("n")) {
+					throw new IllegalArgumentException(); 
+				}
+			}
+			catch (IOException e) {
+				System.out.print("Something wrong happened! Exiting program...");
+				System.exit(1);
+			}
+			catch (IllegalArgumentException e) { 
+				System.out.print("Invalid input! Please try again: ");
+				continue;
+			}
+					
+			if (input.equals("y")) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+
+	public boolean getMove(Board.Player player) {
+	/* True = success, false = board finished */
+		int success = 0;
+		if (player.getType() == 'c') {
+			success = player.moveRandom();
+		}
+		else {
+			while (true) {
+				try {
+					input = reader.readLine();
+					checkUserExit();
+
+					String[] rowCol = input.split("-");
+					if (rowCol.length != 2) {
+						throw new IllegalArgumentException();
+					}
+
+					int row = Integer.parseInt(rowCol[0]);
+					int col = Integer.parseInt(rowCol[1]);
+					
+					success = player.move(row, col);
+					if (success == 2) {
+					// success can only be 0 or 1 after this
+						throw new KeyAlreadyExistsException();
+					}
+				}
+				catch (IOException e) {
+					System.out.print("Something wrong happened! Exiting program...");
+					System.exit(1);
+				}
+				catch (KeyAlreadyExistsException e) {
+				// Subclass of IllegalArgumentException
+					System.out.print("Cannot go there! Please try again: ");
+					continue;
+				}
+				catch (IllegalArgumentException e) {
+				// Also catch NumberFormatException
+					System.out.print("Invalid input! Please try again: ");
+					continue;
+				}
+				catch (IndexOutOfBoundsException e) {
+				// From Player.move() method
+					System.out.print("Invalid input! Please try again: ");
+					continue;
+				}
+
+				break;
+			}
+		}
+
+		if (success == 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public void checkUserExit() {
+	/* Exit on user demand */
+		if (input == null) {
+			System.exit(0);
+		}
+	}
 }
