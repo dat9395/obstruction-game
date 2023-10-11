@@ -9,14 +9,14 @@ class Main {
 		Main main = new Main();
 
 		// Get board size from input
-		System.out.print("Welcome to Obstruction! Please enter a number N\n" +
+		Display.print("Welcome to Obstruction! Please enter a number N\n" +
 							"between 6 to 20 to generate a N x N board: ");
 		int size = main.getBoardSize();
 		Board board = new Board(size, size);
-		System.out.printf("A %d X %d board is created.\n", size, size);
+		Display.printf("A %d X %d board is created.\n", size, size);
 		
 		// Get player order and generate players
-		System.out.print("Do you want to go first? (y/n) ");
+		Display.print("Do you want to go first? (y/n) ");
 		Board.Player[] players = new Board.Player[2];
 		if (main.userGoFirst()) {
 			players[0] = board.new Player(1, 'h');
@@ -27,7 +27,7 @@ class Main {
 			players[1] = board.new Player(2, 'h');
 		}
 
-		System.out.println("Game start!");
+		Display.println("Game start!");
 		Display.printBoard(board);
 		
 		char winner;
@@ -36,7 +36,7 @@ class Main {
 		while (true) {
 			for (Board.Player player : players) {
 				if (player.getType() == 'h') {
-					System.out.print("Your turn. Please enter a position to move (row-column): ");
+					Display.print("Your turn. Please enter a position to move (row-column): ");
 				}
 				
 				main.getMove(player);
@@ -44,7 +44,7 @@ class Main {
 				Display.printBoard(board);
 
 				if (player.getType() == 'c') {
-					System.out.printf("Last move: %d-%d\n", 
+					Display.printf("Last move: %d-%d\n", 
 										board.getLastRandMove()[0], 
 										board.getLastRandMove()[1]);
 				}
@@ -57,10 +57,10 @@ class Main {
 		}
 
 		if (winner == 'h') {
-			System.out.println("You win!");
+			Display.println("You win!");
 		}
 		else {
-			System.out.println("Computer win, you lose!");
+			Display.println("Computer wins, you lose!");
 		}
 	}
 
@@ -77,11 +77,11 @@ class Main {
 				}
 			}
 			catch (IOException e) {
-				System.out.print("Something wrong happened! Exiting program...");
+				Display.print("Something wrong happened! Exiting program...");
 				System.exit(1);
 			}
 			catch (NumberFormatException e) {
-				System.out.print("Invalid input! Please try again: ");
+				Display.print("Invalid input! Please try again: ");
 				continue;
 			}
 					
@@ -101,11 +101,11 @@ class Main {
 				}
 			}
 			catch (IOException e) {
-				System.out.print("Something wrong happened! Exiting program...");
+				Display.print("Something wrong happened! Exiting program...");
 				System.exit(1);
 			}
 			catch (IllegalArgumentException e) { 
-				System.out.print("Invalid input! Please try again: ");
+				Display.print("Invalid input! Please try again: ");
 				continue;
 			}
 					
@@ -145,22 +145,22 @@ class Main {
 					}
 				}
 				catch (IOException e) {
-					System.out.print("Something wrong happened! Exiting program...");
+					Display.print("Something wrong happened! Exiting program...");
 					System.exit(1);
 				}
 				catch (KeyAlreadyExistsException e) {
 				// Subclass of IllegalArgumentException
-					System.out.print("Cannot go there! Please try again: ");
+					Display.print("Cannot go there! Please try again: ");
 					continue;
 				}
 				catch (IllegalArgumentException e) {
 				// Also catch NumberFormatException
-					System.out.print("Invalid input! Please try again: ");
+					Display.print("Invalid input! Please try again: ");
 					continue;
 				}
 				catch (IndexOutOfBoundsException e) {
 				// From Player.move() method
-					System.out.print("Invalid input! Please try again: ");
+					Display.print("Invalid input! Please try again: ");
 					continue;
 				}
 

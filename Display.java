@@ -1,5 +1,6 @@
 public abstract class Display {
     public static void printBoard(Board board) {
+    /* Print the latest state of the board */    
         Integer[][] boardArray = board.getArray();
         
         // Column numbering
@@ -43,5 +44,18 @@ public abstract class Display {
             }
             System.out.println();
         }
+    }
+
+    /* Print methods that symply pass arguments to their System.out versions */
+    public static void print(String message) {
+        System.out.print(message);
+    }
+
+    public static void println(String message) {
+        System.out.println(message);
+    }
+
+    public static void printf(String message, Object ... args) {
+        System.out.printf(message, args);
     }
 }
