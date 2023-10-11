@@ -6,7 +6,7 @@ public class Board {
     private int cols;
     private int blanks; // Number of blank squares remained
     private Integer[] lastRandomMove;
-    /* Maybe have 2 arraylists of available blank rows and cols here (updated when moved) 
+    /* Maybe have 2 arraylists mapping available blank rows and cols here (updated when moved) 
      * so that moveRandom() doesn't have to go through the whole board every time
     */
     
